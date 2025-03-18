@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - {% block title %}{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        /* Dark mode styles */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+                color: #ffffff;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Dark mode scrollbar */
+        @media (prefers-color-scheme: dark) {
+            ::-webkit-scrollbar-track {
+                background: #2d2d2d;
+            }
+            
+            ::-webkit-scrollbar-thumb {
+                background: #666;
+            }
+            
+            ::-webkit-scrollbar-thumb:hover {
+                background: #888;
+            }
+        }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .toast.success {
+            background-color: #10B981;
+        }
+        
+        .toast.error {
+            background-color: #EF4444;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-xl font-bold text-blue-600 dark:text-blue-400">
+                            {{ app_name }}
+                        </a>
+                    </div>
+                    
+                    <!-- Navigation Links -->
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 dark:text-white">
+                            Home
+                        </a>
+                        <a href="/tools" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                            Tools
+                        </a>
+                        <a href="/credits" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                            Credits
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- User Menu -->
+                <div class="flex items-center">
+                    <div class="flex items-center space-x-4">
+                        {% if user %}
+                        <span class="text-sm text-gray-700 dark:text-gray-300">
+                            Credits: <span id="user-credits">{{ user_credits }}</span>
+                        </span>
+                        <div class="relative">
+                            <button id="user-menu-button" class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <span class="mr-2">{{ user.username }}</span>
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10">
+                                <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
+                                <a href="/credits" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Add Credits</a>
+                                <a href="/logout" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Logout</a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a href="/login" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700">
+                            Login
+                        </a>
+                        <a href="/register" class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-800 border border-blue-600 dark:border-blue-400 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">
+                            Register
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white dark:bg-gray-800 shadow-sm h-screen fixed">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tools</h2>
+                <nav class="space-y-1">
+                    {% for tool in tools %}
+                    <a href="/tools/{{ tool.id }}" class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                        <span class="mr-3">{{ tool.icon }}</span>
+                        {{ tool.name }}
+                    </a>
+                    {% endfor %}
+                </nav>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div class="flex-1 ml-64">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Common JavaScript -->
+    <script>
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // User menu toggle
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userDropdown = document.getElementById('user-dropdown');
+        
+        if (userMenuButton && userDropdown) {
+            userMenuButton.addEventListener('click', function() {
+                userDropdown.classList.toggle('hidden');
+            });
+            
+            // Close the dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Dark mode toggle
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

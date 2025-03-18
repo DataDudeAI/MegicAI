@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | {{ app_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="{{ url_for('static', path='/js/main.js') }}" defer></script>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>{{ app_name }}</h1>
+                <div class="auth-subtitle">Create an Account</div>
+            </div>
+            
+            {% if error %}
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <form class="auth-form" action="/register" method="post">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" name="username" required value="{{ request.form.username if request.form else '' }}">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" required value="{{ request.form.email if request.form else '' }}">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirm_password" name="confirm_password" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                </div>
+                
+                <div class="auth-links">
+                    <a href="/login">Already have an account? Sign in</a>
+                </div>
+            </form>
+            
+            <div class="auth-separator">
+                <div class="line"></div>
+                <div class="text">or</div>
+                <div class="line"></div>
+            </div>
+            
+            <div class="social-login">
+                <button class="btn btn-google">
+                    <i class="fab fa-google"></i>
+                    Sign up with Google
+                </button>
+                <button class="btn btn-facebook">
+                    <i class="fab fa-facebook"></i>
+                    Sign up with Facebook
+                </button>
+            </div>
+            
+            <div class="auth-footer">
+                By creating an account, you agree to the
+                <a href="#">Terms of Service</a> and
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

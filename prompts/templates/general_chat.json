@@ -1,0 +1,14 @@
+{
+  "id": "general_chat",
+  "name": "General Chat",
+  "description": "A general-purpose chat prompt",
+  "template": "Please answer the following question or respond to the message: {input}",
+  "system_message": "You are a helpful assistant that provides accurate and concise responses.",
+  "category": "general",
+  "is_public": false,
+  "created_by": "system",
+  "created_at": "2025-03-18T14:56:55.479511",
+  "price": 0.0,
+  "parameters": {},
+  "provider_defaults": {}
+}

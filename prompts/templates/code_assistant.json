@@ -1,0 +1,37 @@
+{
+  "id": "code_assistant",
+  "name": "Code Assistant",
+  "description": "Generate or debug code in various languages",
+  "template": "I need help with the following code task in {language}:\n\n{task}\n\n{code}",
+  "system_message": "You are an expert programmer. Provide well-commented, efficient, and correct code solutions.",
+  "category": "development",
+  "is_public": false,
+  "created_by": "system",
+  "created_at": "2025-03-18T14:56:55.479511",
+  "price": 0.0,
+  "parameters": {
+    "language": {
+      "type": "string",
+      "description": "Programming language",
+      "required": true
+    },
+    "task": {
+      "type": "string",
+      "description": "Description of the coding task",
+      "required": true
+    },
+    "code": {
+      "type": "string",
+      "description": "Existing code (if any)",
+      "default": ""
+    }
+  },
+  "provider_defaults": {
+    "openai": {
+      "model": "gpt-4-turbo"
+    },
+    "deepseek": {
+      "model": "deepseek-coder"
+    }
+  }
+}

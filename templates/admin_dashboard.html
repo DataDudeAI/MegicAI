@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+        <p class="text-gray-600 dark:text-gray-400">Manage users and credits</p>
+    </div>
+    
+    <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">User Statistics</h3>
+            </div>
+            <div class="px-4 py-5 sm:p-6">
+                <dl>
+                    <div class="mb-4">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Users</dt>
+                        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{{ total_users }}</dd>
+                    </div>
+                    <div class="mb-4">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Admin Users</dt>
+                        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{{ admin_count }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Credits Issued</dt>
+                        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{{ total_credits }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg md:col-span-2">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Quick Actions</h3>
+            </div>
+            <div class="px-4 py-5 sm:p-6">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <button id="addCreditsAllBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Add Credits to All Users
+                    </button>
+                    <button id="addNewUserBtn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        Add New User
+                    </button>
+                    <button id="clearSessionsBtn" class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
+                        Clear Expired Sessions
+                    </button>
+                    <button id="resetCreditsBtn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                        Reset All Credits
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+        <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">User Management</h3>
+            <div class="relative">
+                <input type="text" id="userSearch" placeholder="Search users..." class="border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            User
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Role
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Credits
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="userTable">
+                    {% for user in users %}
+                    <tr class="user-row" data-user-id="{{ user.id }}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ user.username }}
+                                </div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                    {{ user.email }}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if user.role == 'admin' %}bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100{% else %}bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100{% endif %}">
+                                {{ user.role }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            <span class="credits-display">{{ user.credits }}</span>
+                            <div class="edit-credits hidden">
+                                <input type="number" class="credits-input w-20 border border-gray-300 dark:border-gray-600 rounded p-1 dark:bg-gray-700 dark:text-white" value="{{ user.credits }}">
+                                <button class="save-credits ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded">Save</button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 edit-credits-btn">
+                                Edit Credits
+                            </button>
+                            <span class="mx-2 text-gray-300 dark:text-gray-600">|</span>
+                            <button class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 delete-user-btn" {% if user.role == 'admin' %}disabled{% endif %}>
+                                {% if user.role == 'admin' %}Admin{% else %}Delete{% endif %}
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for adding credits to all users -->
+<div id="addCreditsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+        <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Add Credits to All Users</h3>
+        <div class="mb-4">
+            <label for="creditsAmount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Credits to add:</label>
+            <input type="number" id="creditsAmount" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 dark:bg-gray-700 dark:text-white" value="100">
+        </div>
+        <div class="flex justify-end space-x-4">
+            <button id="cancelAddCredits" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                Cancel
+            </button>
+            <button id="confirmAddCredits" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Add Credits
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Search functionality
+    document.getElementById('userSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('.user-row');
+        
+        rows.forEach(row => {
+            const username = row.querySelector('.text-sm.font-medium').textContent.toLowerCase();
+            const email = row.querySelector('.text-sm.text-gray-500').textContent.toLowerCase();
+            
+            if (username.includes(searchTerm) || email.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+    
+    // Edit credits functionality
+    document.querySelectorAll('.edit-credits-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const creditsDisplay = row.querySelector('.credits-display');
+            const editCredits = row.querySelector('.edit-credits');
+            
+            creditsDisplay.classList.toggle('hidden');
+            editCredits.classList.toggle('hidden');
+            
+            if (!editCredits.classList.contains('hidden')) {
+                editCredits.querySelector('input').focus();
+            }
+        });
+    });
+    
+    // Save credits functionality
+    document.querySelectorAll('.save-credits').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const userId = row.dataset.userId;
+            const newCredits = parseFloat(row.querySelector('.credits-input').value);
+            const creditsDisplay = row.querySelector('.credits-display');
+            const editCredits = row.querySelector('.edit-credits');
+            
+            fetch('/api/admin/update-credits', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    credits: newCredits
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    creditsDisplay.textContent = newCredits;
+                    creditsDisplay.classList.toggle('hidden');
+                    editCredits.classList.toggle('hidden');
+                    showToast(data.message, 'success');
+                } else {
+                    showToast('Error: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Failed to update credits', 'error');
+            });
+        });
+    });
+    
+    // Modal functionality
+    const addCreditsModal = document.getElementById('addCreditsModal');
+    
+    document.getElementById('addCreditsAllBtn').addEventListener('click', function() {
+        addCreditsModal.classList.remove('hidden');
+        addCreditsModal.classList.add('flex');
+    });
+    
+    document.getElementById('cancelAddCredits').addEventListener('click', function() {
+        addCreditsModal.classList.add('hidden');
+        addCreditsModal.classList.remove('flex');
+    });
+    
+    // Close modal when clicking outside
+    addCreditsModal.addEventListener('click', function(e) {
+        if (e.target === addCreditsModal) {
+            addCreditsModal.classList.add('hidden');
+            addCreditsModal.classList.remove('flex');
+        }
+    });
+</script>
+{% endblock %} 

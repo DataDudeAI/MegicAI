@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - Watch Ad</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>{{ app_name }}</h1>
+                <div class="sidebar-subtitle">AI Toolkit</div>
+            </div>
+            
+            <!-- Credits Section -->
+            <div class="sidebar-section">
+                <div class="credit-display">
+                    <div class="credit-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div>
+                        <div class="credit-label">Your Credits</div>
+                        <div class="credit-value">{{ user_credits }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Navigation</div>
+                <a href="/" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-home"></i></div>
+                    <div>Home</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-history"></i></div>
+                    <div>History</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-coins"></i></div>
+                    <div>Buy Credits</div>
+                </a>
+            </div>
+            
+            <!-- Tools -->
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Tools</div>
+                {% for tool in tools %}
+                <a href="/tool/{{ tool.id }}" class="nav-item">
+                    <div class="nav-icon"><i class="{{ tool.icon }}"></i></div>
+                    <div>{{ tool.name }}</div>
+                </a>
+                {% endfor %}
+            </div>
+            
+            <div class="sidebar-footer">
+                &copy; {{ app_name }} 2023
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <div class="content-header">
+                <h1>Watch an Ad to Earn Credits</h1>
+                <p>Watch this ad to gain free credits for using AI tools.</p>
+            </div>
+            
+            <div class="ad-content">
+                <div class="ad-header">
+                    <h2>Ad Information</h2>
+                </div>
+                
+                <div class="ad-info">
+                    <div class="ad-reward">
+                        <div class="reward-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div>
+                            <h3>Reward</h3>
+                            <p>{{ ad_reward }} credits</p>
+                        </div>
+                    </div>
+                    
+                    <div class="ad-duration">
+                        <div class="duration-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h3>Duration</h3>
+                            <p>{{ ad_duration }} seconds</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ad-player">
+                    <div class="ad-container">
+                        <div class="mock-ad">
+                            <div class="mock-ad-content">
+                                <h2>Advertisement</h2>
+                                <p>This is a sample advertisement. In a real implementation, this would be an actual ad from an ad network.</p>
+                                <div class="mock-ad-image">
+                                    <i class="fas fa-image fa-4x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ad-timer-container">
+                        <div class="ad-timer">
+                            <span id="ad-countdown">{{ ad_duration }}</span> seconds remaining
+                        </div>
+                    </div>
+                </div>
+                
+                <form action="/complete-ad" method="post">
+                    <input type="hidden" name="tool_id" value="{{ tool_id }}">
+                    <input type="hidden" name="prompt" value="{{ prompt }}">
+                    <input type="hidden" name="provider" value="{{ provider }}">
+                    <input type="hidden" name="model" value="{{ model }}">
+                    
+                    <div class="ad-actions">
+                        <button id="complete-ad-btn" class="btn btn-primary" disabled>
+                            Please wait <span id="btn-countdown">{{ ad_duration }}</span>s
+                        </button>
+                        <a href="/" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const adDuration = {{ ad_duration }};
+            let timeRemaining = adDuration;
+            const countdownElement = document.getElementById('ad-countdown');
+            const btnCountdownElement = document.getElementById('btn-countdown');
+            const completeAdBtn = document.getElementById('complete-ad-btn');
+            
+            const countdownInterval = setInterval(function() {
+                timeRemaining -= 1;
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownElement.textContent = '0';
+                    completeAdBtn.disabled = false;
+                    completeAdBtn.innerHTML = 'Complete and Get Credits <i class="fas fa-check"></i>';
+                } else {
+                    countdownElement.textContent = timeRemaining;
+                    btnCountdownElement.textContent = timeRemaining;
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

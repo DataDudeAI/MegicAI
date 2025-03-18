@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>{{ app_name }}</h1>
+                <div class="sidebar-subtitle">AI Toolkit</div>
+            </div>
+            
+            <!-- Credits Section -->
+            <div class="sidebar-section">
+                <div class="credit-display">
+                    <div class="credit-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div>
+                        <div class="credit-label">Your Credits</div>
+                        <div class="credit-value">{{ user_credits }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Navigation</div>
+                <a href="/" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-home"></i></div>
+                    <div>Home</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-history"></i></div>
+                    <div>History</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-coins"></i></div>
+                    <div>Buy Credits</div>
+                </a>
+            </div>
+            
+            <!-- Tools -->
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Tools</div>
+                {% for tool in tools %}
+                <a href="/tool/{{ tool.id }}" class="nav-item">
+                    <div class="nav-icon"><i class="{{ tool.icon }}"></i></div>
+                    <div>{{ tool.name }}</div>
+                </a>
+                {% endfor %}
+            </div>
+            
+            <div class="sidebar-footer">
+                &copy; {{ app_name }} 2023
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <div class="content-header">
+                <h1>Generated Result</h1>
+                <p>Here's what our AI has created for you.</p>
+            </div>
+            
+            <div class="result-header">
+                <h2>{{ result.tool_name }}</h2>
+                <div class="result-meta">
+                    <div class="result-provider">
+                        <div class="provider-icon"><i class="fas fa-server"></i></div>
+                        <div>{{ result.provider }}</div>
+                    </div>
+                    <div class="result-time">
+                        <div class="time-icon"><i class="fas fa-clock"></i></div>
+                        <div>{{ result.response_time }}s</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-content">
+                {% if result.type == 'text' %}
+                <div class="result-text">
+                    <div class="prompt-box">
+                        <h3>Your Prompt:</h3>
+                        <p>{{ result.prompt }}</p>
+                    </div>
+                    <div class="response-box">
+                        <h3>AI Response:</h3>
+                        <div class="generated-text">
+                            {{ result.result|safe }}
+                        </div>
+                    </div>
+                </div>
+                {% elif result.type == 'image' %}
+                <div class="result-image">
+                    <div class="prompt-box">
+                        <h3>Your Prompt:</h3>
+                        <p>{{ result.prompt }}</p>
+                    </div>
+                    <div class="image-container">
+                        <h3>Generated Image:</h3>
+                        <img src="data:image/jpeg;base64,{{ result.image_data }}" alt="Generated image">
+                    </div>
+                </div>
+                {% elif result.type == 'code' %}
+                <div class="result-code">
+                    <div class="prompt-box">
+                        <h3>Your Prompt:</h3>
+                        <p>{{ result.prompt }}</p>
+                    </div>
+                    <div class="code-container">
+                        <h3>Generated Code:</h3>
+                        <pre><code>{{ result.result }}</code></pre>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if result.ai_probability is defined %}
+                <div class="result-ai-probability">
+                    <h3>AI Detection Probability</h3>
+                    <div class="probability-bar">
+                        <div class="probability-fill" style="--probability: {{ result.ai_probability }}%;"></div>
+                    </div>
+                    <div class="probability-label">
+                        <div>Human-like</div>
+                        <div>{{ result.ai_probability }}%</div>
+                        <div>AI-generated</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="result-actions">
+                <div class="action-buttons">
+                    <a href="/tool/{{ result.tool_id }}" class="btn btn-primary">Try Again</a>
+                    <a href="/" class="btn btn-secondary">Use Another Tool</a>
+                </div>
+                
+                <details class="result-details">
+                    <summary>View Response Details</summary>
+                    <div class="response-json">
+                        {% if json_data is defined %}
+                        <pre>{{ json_data|tojson(indent=2) }}</pre>
+                        {% else %}
+                        <pre>No detailed response data available</pre>
+                        {% endif %}
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add any JavaScript needed for the result page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Result page loaded');
+        });
+    </script>
+</body>
+</html> 

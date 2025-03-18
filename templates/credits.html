@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Credits{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Credits</h1>
+            <p class="mt-2 text-gray-600 dark:text-gray-300">Manage your credits for using AI tools</p>
+        </div>
+        <div class="text-right">
+            <div class="text-2xl font-bold text-blue-600">{{ user_credits }}</div>
+            <div class="text-sm text-gray-500">credits available</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Earn Credits -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Earn Credits</h2>
+            
+            <!-- Daily Rewards -->
+            <div class="mb-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Daily Rewards</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">
+                    Watch ads to earn up to 30 credits per day (3 rewards of 10 credits each)
+                </p>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <span id="daily-count">0</span>/3 rewards claimed today
+                    </div>
+                    <div id="daily-cooldown" class="text-sm text-gray-500 dark:text-gray-400 hidden">
+                        Next reward in: <span id="cooldown-timer">5:00</span>
+                    </div>
+                </div>
+                <button id="daily-reward-btn"
+                        class="w-full py-3 px-4 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Watch Ad for 10 Credits
+                </button>
+            </div>
+
+            <!-- Special Reward -->
+            <div class="mb-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Special Reward</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">
+                    Watch a longer ad to earn 25 bonus credits (available once per day)
+                </p>
+                <button id="special-reward-btn"
+                        class="w-full py-3 px-4 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Watch Special Ad for 25 Credits
+                </button>
+            </div>
+
+            <!-- Referral Program -->
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Referral Program</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">
+                    Invite friends to earn 50 credits for each referral
+                </p>
+                <div class="flex items-center space-x-4">
+                    <input type="text" id="referral-link" 
+                           value="{{ referral_link }}" 
+                           class="flex-1 px-4 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           readonly>
+                    <button id="copy-referral" 
+                            class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Copy
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase Credits -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Purchase Credits</h2>
+            
+            <!-- Credit Packages -->
+            <div class="space-y-4">
+                {% for package in credit_packages %}
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ package.name }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ package.description }}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-blue-600">${{ package.price }}</div>
+                            <div class="text-sm text-gray-500">{{ package.credits }} credits</div>
+                        </div>
+                    </div>
+                    <button onclick="purchaseCredits('{{ package.id }}')"
+                            class="w-full py-2 px-4 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Purchase
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="mt-6">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Accepted Payment Methods</h3>
+                <div class="flex items-center space-x-4">
+                    <svg class="h-8 w-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    </svg>
+                    <svg class="h-8 w-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    </svg>
+                    <svg class="h-8 w-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credit History -->
+    <div class="mt-8">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Credit History</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {% for transaction in credit_history %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ transaction.date }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ transaction.type }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if transaction.amount > 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                {{ transaction.amount }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                {{ transaction.details }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ad Modal -->
+<div id="ad-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Watch Ad</h2>
+            <button id="close-ad-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Ad Container -->
+        <div id="ad-container" class="aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg mb-4 flex items-center justify-center">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-gray-400 mb-2" id="ad-countdown">30</div>
+                <div class="text-sm text-gray-500">seconds remaining</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
+            <div id="ad-progress" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="ad-status" class="text-center text-sm text-gray-500 dark:text-gray-400">
+            Please watch the ad to earn your reward
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dailyBtn = document.getElementById('daily-reward-btn');
+    const specialBtn = document.getElementById('special-reward-btn');
+    const adModal = document.getElementById('ad-modal');
+    const closeAdModal = document.getElementById('close-ad-modal');
+    const copyReferralBtn = document.getElementById('copy-referral');
+    const referralLink = document.getElementById('referral-link');
+
+    // Load reward status
+    loadRewardStatus();
+
+    // Set up event listeners
+    dailyBtn.addEventListener('click', () => showAdModal('daily'));
+    specialBtn.addEventListener('click', () => showAdModal('special'));
+    closeAdModal.addEventListener('click', hideAdModal);
+    copyReferralBtn.addEventListener('click', copyReferralLink);
+
+    // Load reward status
+    async function loadRewardStatus() {
+        try {
+            const response = await fetch('/api/ads/status');
+            const data = await response.json();
+
+            if (data.success) {
+                updateDailyRewardStatus(data.daily_rewards);
+                updateSpecialRewardStatus(data.special_reward);
+            }
+        } catch (error) {
+            console.error('Error loading reward status:', error);
+        }
+    }
+
+    // Update daily reward status
+    function updateDailyRewardStatus(status) {
+        const dailyCount = document.getElementById('daily-count');
+        const cooldownDiv = document.getElementById('daily-cooldown');
+        const cooldownTimer = document.getElementById('cooldown-timer');
+
+        dailyCount.textContent = status.count;
+
+        if (status.can_claim) {
+            dailyBtn.disabled = false;
+            cooldownDiv.classList.add('hidden');
+        } else {
+            dailyBtn.disabled = true;
+            cooldownDiv.classList.remove('hidden');
+            updateCooldownTimer(status.cooldown_remaining);
+        }
+    }
+
+    // Update special reward status
+    function updateSpecialRewardStatus(status) {
+        specialBtn.disabled = !status.can_claim;
+    }
+
+    // Show ad modal
+    function showAdModal(type) {
+        currentRewardType = type;
+        adModal.classList.remove('hidden');
+        adModal.classList.add('flex');
+        startAdTimer();
+    }
+
+    // Hide ad modal
+    function hideAdModal() {
+        adModal.classList.add('hidden');
+        adModal.classList.remove('flex');
+        stopAdTimer();
+        resetAdProgress();
+    }
+
+    // Copy referral link
+    function copyReferralLink() {
+        referralLink.select();
+        document.execCommand('copy');
+        showToast('Referral link copied to clipboard!', 'success');
+    }
+
+    // Purchase credits
+    window.purchaseCredits = async function(packageId) {
+        try {
+            const response = await fetch('/api/credits/purchase', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    package_id: packageId
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Redirect to payment page
+                window.location.href = data.payment_url;
+            } else {
+                showToast(data.error || 'Failed to initiate purchase', 'error');
+            }
+        } catch (error) {
+            console.error('Error purchasing credits:', error);
+            showToast('Failed to initiate purchase', 'error');
+        }
+    };
+});
+</script>
+{% endblock %} 

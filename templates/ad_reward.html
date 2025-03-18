@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Watch Ad & Earn Credits{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+            <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
+                Watch Ad & Earn Credits
+            </h1>
+        </div>
+        
+        <div class="px-6 py-4">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="w-full lg:w-2/3">
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 mb-6">
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-2">How it works</h2>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            Watch a short advertisement to earn credits that you can use to generate content with our AI tools.
+                        </p>
+                        <ul class="list-disc list-inside text-gray-600 dark:text-gray-300 mb-4">
+                            <li>Complete the ad to earn {{ tool.cost }} credits</li>
+                            <li>You will be redirected back to the tool automatically</li>
+                            <li>Your credits will be available immediately</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Ad Container -->
+                    <div id="ad-container" class="bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden relative">
+                        <div id="ad-placeholder" class="flex flex-col items-center justify-center p-10 text-center">
+                            <div class="mb-4">
+                                <svg class="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-300 mb-6">Loading advertisement...</p>
+                            <button id="start-ad-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                Start Watching
+                            </button>
+                        </div>
+                        
+                        <div id="ad-content" class="hidden">
+                            <!-- This is where the actual ad will be displayed -->
+                            {% if reward_ad and reward_ad.success %}
+                                {{ reward_ad.ad_code|safe }}
+                            {% else %}
+                                <div class="p-6 text-center">
+                                    <p class="text-red-500">Sorry, no ads are available at the moment. Please try again later.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div id="ad-completed" class="hidden flex flex-col items-center justify-center p-10 text-center">
+                            <div class="mb-4">
+                                <svg class="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">Thank You!</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-6">
+                                You've earned <span class="font-bold text-green-500">{{ tool.cost }} credits</span>
+                            </p>
+                            <a href="{{ return_url }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                Return to Tool
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full lg:w-1/3">
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6">
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Your Balance</h2>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-gray-900 dark:text-white font-semibold" id="current-credits">{{ user_credits }}</span>
+                            </div>
+                            <div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100">
+                                    Credits
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tool info -->
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Tool Information</h2>
+                        <div class="flex items-center mb-2">
+                            <span class="text-gray-600 dark:text-gray-300">{{ tool.name }}</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="text-gray-600 dark:text-gray-300 mr-2">Cost:</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ tool.cost }} credits</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">
+                            {{ tool.description }}
+                        </p>
+                    </div>
+                    
+                    <!-- Sidebar ad -->
+                    <div class="mt-6">
+                        {% if sidebar_ad and sidebar_ad.success %}
+                            {{ sidebar_ad.ad_code|safe }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set up variables from Jinja templates
+    var toolId = "{{ tool.id }}";
+    var returnUrl = "{{ return_url }}";
+    {% if reward_ad and reward_ad.success %}
+    var hasRewardAd = true;
+    var impressionId = "{{ reward_ad.impression_id }}";
+    {% else %}
+    var hasRewardAd = false;
+    var impressionId = null;
+    {% endif %}
+    
+    // Get DOM elements
+    var adContainer = document.getElementById('ad-container');
+    var adPlaceholder = document.getElementById('ad-placeholder');
+    var adContent = document.getElementById('ad-content');
+    var adCompleted = document.getElementById('ad-completed');
+    var startAdBtn = document.getElementById('start-ad-btn');
+    var currentCredits = document.getElementById('current-credits');
+    
+    // Set up event listener for ad start button
+    startAdBtn.addEventListener('click', function() {
+        adPlaceholder.classList.add('hidden');
+        adContent.classList.remove('hidden');
+        
+        // Simulate ad completion after a delay
+        var adDuration = hasRewardAd ? 5000 : 3000;
+        setTimeout(function() {
+            completeAd(impressionId);
+        }, adDuration);
+    });
+    
+    // Handle ad completion
+    function completeAd(adImpressionId) {
+        // Hide ad content
+        adContent.classList.add('hidden');
+        
+        // Show loading spinner
+        var loadingEl = document.createElement('div');
+        loadingEl.className = 'flex justify-center items-center p-10';
+        loadingEl.innerHTML = 
+            '<svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">' +
+                '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+                '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>' +
+            '</svg>';
+        adContainer.appendChild(loadingEl);
+        
+        // Send completion to server
+        fetch('/api/ads/complete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ad_type: 'reward_video',
+                impression_id: adImpressionId,
+                tool_id: toolId
+            })
+        })
+        .then(function(response) { 
+            return response.json(); 
+        })
+        .then(function(data) {
+            // Remove loading spinner
+            adContainer.removeChild(loadingEl);
+            
+            if (data.success) {
+                // Update credits display
+                if (currentCredits) {
+                    currentCredits.textContent = data.current_credits;
+                }
+                
+                // Also update header credits if available
+                var headerCredits = document.getElementById('user-credits');
+                if (headerCredits) {
+                    headerCredits.textContent = data.current_credits;
+                }
+                
+                // Show completion message
+                adCompleted.classList.remove('hidden');
+                
+                // Show success toast
+                showToast('You earned ' + data.credits_earned + ' credits!', 'success');
+                
+                // Redirect after delay if auto-redirect is enabled
+                setTimeout(function() {
+                    window.location.href = returnUrl;
+                }, 3000);
+            } else {
+                // Show error message
+                showToast('Error: ' + data.error, 'error');
+                adPlaceholder.classList.remove('hidden');
+                startAdBtn.textContent = 'Try Again';
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            // Remove loading spinner
+            adContainer.removeChild(loadingEl);
+            // Show error message
+            showToast('Network error, please try again', 'error');
+            adPlaceholder.classList.remove('hidden');
+            startAdBtn.textContent = 'Try Again';
+        });
+    }
+</script>
+{% endblock %} 

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tool.name }} | {{ app_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="{{ url_for('static', path='/js/main.js') }}" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>{{ app_name }}</h1>
+                <div class="sidebar-subtitle">AI Toolkit</div>
+            </div>
+            
+            <!-- Credits Section -->
+            <div class="sidebar-section">
+                <div class="credit-display">
+                    <div class="credit-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div>
+                        <div class="credit-label">Your Credits</div>
+                        <div class="credit-value">{{ user_credits }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Navigation</div>
+                <a href="/" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-home"></i></div>
+                    <div>Home</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-history"></i></div>
+                    <div>History</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-coins"></i></div>
+                    <div>Buy Credits</div>
+                </a>
+            </div>
+            
+            <!-- Categories -->
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Categories</div>
+                <a href="/#text-tools" class="nav-item {% if tool.category == 'text' %}active{% endif %}">
+                    <div class="nav-icon"><i class="fas fa-font"></i></div>
+                    <div>Text Generation</div>
+                </a>
+                <a href="/#image-tools" class="nav-item {% if tool.category == 'image' %}active{% endif %}">
+                    <div class="nav-icon"><i class="fas fa-image"></i></div>
+                    <div>Image Generation</div>
+                </a>
+                <a href="/#audio-tools" class="nav-item {% if tool.category == 'audio' %}active{% endif %}">
+                    <div class="nav-icon"><i class="fas fa-music"></i></div>
+                    <div>Audio Tools</div>
+                </a>
+                <a href="/#video-tools" class="nav-item {% if tool.category == 'video' %}active{% endif %}">
+                    <div class="nav-icon"><i class="fas fa-video"></i></div>
+                    <div>Video Tools</div>
+                </a>
+                <a href="/#utility-tools" class="nav-item {% if tool.category == 'utility' %}active{% endif %}">
+                    <div class="nav-icon"><i class="fas fa-tools"></i></div>
+                    <div>Utility Tools</div>
+                </a>
+            </div>
+            
+            <div class="sidebar-footer">
+                &copy; {{ app_name }} 2023
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <div class="tool-header">
+                <div class="tool-header-icon">
+                    <i class="{{ tool.icon }}"></i>
+                </div>
+                <div>
+                    <h1>{{ tool.name }}</h1>
+                    <p>{{ tool.description }}</p>
+                </div>
+            </div>
+            
+            <div class="tool-content">
+                <div class="main-form">
+                    <h2>Enter your prompt:</h2>
+                    <form id="tool-form" action="{% if user_credits >= tool.cost %}/process-request{% else %}/watch-ad/{{ tool.id }}{% endif %}" method="post" data-async-submit="true" data-success-target="form-success" data-error-target="form-error">
+                        <input type="hidden" name="tool_id" value="{{ tool.id }}">
+                        
+                        <div class="form-group">
+                            <textarea id="prompt" name="prompt" class="prompt-textarea" placeholder="Describe what you want to generate..." required></textarea>
+                        </div>
+                        
+                        <div class="suggestion-chips">
+                            <div class="sidebar-heading">Suggestions:</div>
+                            {% for suggestion in suggestions %}
+                                <div class="suggestion-chip" onclick="addSuggestionToPrompt('{{ suggestion }}', 'prompt')">{{ suggestion }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="provider">Select AI Provider:</label>
+                            <select id="provider" name="provider" class="form-select">
+                                {% for provider in tool.providers %}
+                                    <option value="{{ provider }}">{{ provider|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="model">Select Model:</label>
+                            <select id="model" name="model" class="form-select">
+                                <option value="default">Default</option>
+                                <option value="premium">Premium</option>
+                                <option value="economy">Economy</option>
+                            </select>
+                        </div>
+                        
+                        <div id="form-error" class="alert alert-error" style="display: none;"></div>
+                        <div id="form-success" class="alert alert-success" style="display: none;"></div>
+                        
+                        <div class="button-section">
+                            <button type="submit" class="btn btn-primary">
+                                {% if user_credits >= tool.cost %}
+                                    Generate ({{ tool.cost }} credits)
+                                {% else %}
+                                    Watch Ad to Earn Credits
+                                {% endif %}
+                            </button>
+                            <a href="/" class="btn btn-secondary">Back to Tools</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="tool-sidebar">
+                    <div class="tool-cost-box">
+                        <h3>Credit Cost</h3>
+                        <div class="cost-display">
+                            <div class="cost-value">{{ tool.cost }}</div>
+                            <div>credits per generation</div>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <h3>Your Balance</h3>
+                            <div class="credit-display" style="margin-top: 10px;">
+                                <div class="credit-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div>
+                                    <div class="credit-label">Available</div>
+                                    <div class="credit-value">{{ user_credits }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if user_credits < tool.cost %}
+                        <div class="alert alert-warning" style="margin-top: 15px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            You need {{ tool.cost - user_credits }} more credits
+                        </div>
+                        <a href="/watch-ad/{{ tool.id }}" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                            Watch {{ tool.ad_duration }}s Ad (+ {{ tool.cost }} credits)
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

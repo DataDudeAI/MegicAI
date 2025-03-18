@@ -1,0 +1,28 @@
+{
+  "publisher_id": "",
+  "ad_units": {
+    "sidebar": {
+      "ad_unit_id": "1234567890",
+      "ad_format": "display",
+      "width": 300,
+      "height": 250,
+      "slot": "sidebar-ad",
+      "enabled": true
+    },
+    "footer": {
+      "ad_unit_id": "0987654321",
+      "ad_format": "display",
+      "width": 728,
+      "height": 90,
+      "slot": "footer-ad",
+      "enabled": true
+    },
+    "reward_video": {
+      "ad_unit_id": "5678901234",
+      "ad_format": "video",
+      "slot": "reward-video-ad",
+      "enabled": true,
+      "reward_credits": 10
+    }
+  }
+}

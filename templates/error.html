@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - Error</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>{{ app_name }}</h1>
+                <div class="sidebar-subtitle">AI Toolkit</div>
+            </div>
+            
+            <!-- Credits Section -->
+            <div class="sidebar-section">
+                <div class="credit-display">
+                    <div class="credit-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div>
+                        <div class="credit-label">Your Credits</div>
+                        <div class="credit-value">{{ user_credits }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Navigation</div>
+                <a href="/" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-home"></i></div>
+                    <div>Home</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-history"></i></div>
+                    <div>History</div>
+                </a>
+                <a href="#" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-coins"></i></div>
+                    <div>Buy Credits</div>
+                </a>
+            </div>
+            
+            <!-- Tools -->
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Tools</div>
+                {% for tool in tools %}
+                <a href="/tool/{{ tool.id }}" class="nav-item">
+                    <div class="nav-icon"><i class="{{ tool.icon }}"></i></div>
+                    <div>{{ tool.name }}</div>
+                </a>
+                {% endfor %}
+            </div>
+            
+            <div class="sidebar-footer">
+                &copy; {{ app_name }} 2023
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <div class="content-header">
+                <h1>Error</h1>
+                <p>Something went wrong with your request.</p>
+            </div>
+            
+            <div class="error-container">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2>{{ error_title if error_title is defined else 'Error Occurred' }}</h2>
+                <p>{{ error_description if error_description is defined else 'An unexpected error occurred while processing your request.' }}</p>
+                
+                <div class="action-buttons">
+                    <a href="/" class="btn btn-primary">Return to Home</a>
+                    <button onclick="history.back()" class="btn btn-secondary">Go Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

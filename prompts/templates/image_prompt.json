@@ -1,0 +1,39 @@
+{
+  "id": "image_prompt",
+  "name": "Image Generation",
+  "description": "Detailed prompt for image generation",
+  "template": "{subject} {style}, {details}, {quality}",
+  "system_message": "",
+  "category": "images",
+  "is_public": false,
+  "created_by": "system",
+  "created_at": "2025-03-18T14:56:55.479511",
+  "price": 0.0,
+  "parameters": {
+    "subject": {
+      "type": "string",
+      "description": "Main subject of the image",
+      "required": true
+    },
+    "style": {
+      "type": "string",
+      "description": "Art style",
+      "default": "digital art"
+    },
+    "details": {
+      "type": "string",
+      "description": "Additional details",
+      "default": "detailed, vibrant colors"
+    },
+    "quality": {
+      "type": "string",
+      "description": "Quality descriptors",
+      "default": "high quality, 4k, trending on artstation"
+    }
+  },
+  "provider_defaults": {
+    "openai": {
+      "model": "dall-e-3"
+    }
+  }
+}

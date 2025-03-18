@@ -1,0 +1,30 @@
+{
+  "id": "creative_writing",
+  "name": "Creative Writing",
+  "description": "Generate creative writing based on a premise",
+  "template": "Write a {genre} {format} about {topic}.",
+  "system_message": "You are a creative writer with expertise in different genres and formats.",
+  "category": "creative",
+  "is_public": false,
+  "created_by": "system",
+  "created_at": "2025-03-18T14:56:55.479511",
+  "price": 0.0,
+  "parameters": {
+    "genre": {
+      "type": "string",
+      "description": "Genre of the writing",
+      "default": "science fiction"
+    },
+    "format": {
+      "type": "string",
+      "description": "Format of the writing",
+      "default": "short story"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Topic or premise",
+      "required": true
+    }
+  },
+  "provider_defaults": {}
+}
